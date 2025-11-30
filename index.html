@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>战棋 - 围棋与象棋的融合</title>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- 游戏标题 -->
+        <header class="game-header">
+            <h1>战棋</h1>
+            <p>围棋与象棋的融合 - 战略与战术的对决</p>
+        </header>
+        
+        <!-- 玩家信息区 -->
+        <div id="player-info">
+            <div class="player" id="player-black">
+                <div class="player-marker black"></div>
+                <div class="player-details">
+                    <h3>黑方玩家</h3>
+                    <div class="territory">领土: <span id="black-territory">0</span></div>
+                    <div class="tokens">战术令牌: <span id="black-tokens">0</span></div>
+                </div>
+            </div>
+            
+            <div class="turn-indicator">
+                <div class="turn-label">当前回合</div>
+                <div class="turn-player" id="current-player-container">
+                    <div class="player-marker black"></div>
+                    <span id="current-player">黑方</span>
+                </div>
+            </div>
+            
+            <div class="player" id="player-white">
+                <div class="player-marker white"></div>
+                <div class="player-details">
+                    <h3>白方玩家</h3>
+                    <div class="territory">领土: <span id="white-territory">0</span></div>
+                    <div class="tokens">战术令牌: <span id="white-tokens">0</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 游戏控制区 -->
+        <div id="game-controls">
+            <button id="new-game" class="control-btn">新游戏</button>
+            <button id="undo" class="control-btn">悔棋</button>
+            <button id="rules" class="control-btn">规则</button>
+            <button id="test-tokens" class="control-btn">测试令牌</button>
+            <div class="game-status" id="game-message">游戏未开始</div>
+        </div>
+        
+        <!-- 棋盘区域 -->
+        <div class="boards-container">
+            <!-- 战略层棋盘（围棋） -->
+            <div class="board-section">
+                <h2>战略层（围棋棋盘）</h2>
+                <div id="strategic-board" class="board-container"></div>
+            </div>
+            
+            <!-- 战术层棋盘（象棋） -->
+            <div class="board-section">
+                <h2>战术层（象棋棋盘）</h2>
+                <div id="tactical-board" class="board-container"></div>
+                <div class="token-controls">
+                    <button id="summon-piece">召唤棋子</button>
+                    <div class="available-pieces"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 信息面板 -->
+        <div class="info-panel">
+            <div class="battle-status" id="battle-status">
+                <h3>战斗状态</h3>
+                <p>准备就绪</p>
+            </div>
+            <div class="game-stats">
+                <h3>游戏统计</h3>
+                <p>步数: <span id="move-count">0</span></p>
+                <p>游戏时间: <span id="game-time">00:00</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 规则模态框 -->
+    <div id="rules-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>游戏规则</h2>
+            <div id="rules-content"></div>
+        </div>
+    </div>
+    
+    <!-- 加载中指示器 -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="loading-spinner"></div>
+        <p>游戏加载中...</p>
+    </div>
+    
+    <!-- 测试脚本 - 放在最前面验证加载顺序 -->
+    <!-- <script src="test-load-order.js"></script> -->
+    
+    <!-- 游戏脚本文件 -->
+    <script src="src/js/game.js"></script>
+    <script src="src/js/board.js"></script>
+    <script src="src/js/strategicLayer.js"></script>
+    <script src="src/js/tacticalLayer.js"></script>
+    <script src="src/js/rules.js"></script>
+    <script src="src/js/ui.js"></script>
+    <script src="src/js/interaction.js"></script>
+    <script src="src/js/katagoInterface.js"></script>
+    <script src="src/js/performance.js"></script>
+    <script src="src/js/index.js"></script>
+    
+    <!-- 测试脚本（可选） -->
+    <script src="test.js"></script>
+</body>
+</html>

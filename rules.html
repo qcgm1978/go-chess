@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>战略围棋与战术象棋融合 - 游戏规则</title>
+    <link rel="stylesheet" href="src/css/style.css">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .rules-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #8B4513;
+            margin-bottom: 40px;
+            font-size: 2.8em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #4CAF50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #2196F3;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        h4 {
+            color: #666;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 1.4em;
+        }
+        
+        p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 25px;
+        }
+        
+        li {
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+        
+        .highlight {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-left: 4px solid #4CAF50;
+            margin: 25px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .note {
+            background-color: #FFF3CD;
+            border: 1px solid #FFEAA7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .warning {
+            background-color: #F8D7DA;
+            border: 1px solid #F5C6CB;
+            color: #721C24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .example {
+            background-color: #E9ECEF;
+            border: 1px solid #DEE2E6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .piece-image {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid #333;
+            color: #333;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .piece-image.black {
+            background-color: #333;
+            color: white;
+        }
+        
+        .piece-image.fortress {
+            background-color: #FFD700;
+            border: 2px solid #DAA520;
+            color: #8B4513;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.9em;
+            border-radius: 5px 5px 0 0;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        table thead tr {
+            background-color: #4CAF50;
+            color: #ffffff;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        table th, table td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+        
+        table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+        
+        table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+        
+        table tbody tr:last-of-type {
+            border-bottom: 2px solid #4CAF50;
+        }
+        
+        .back-button {
+            display: block;
+            margin: 40px auto 0;
+            padding: 15px 40px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            max-width: 200px;
+        }
+        
+        .back-button:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .rules-container {
+                padding: 20px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+                margin-bottom: 30px;
+            }
+            
+            h2 {
+                font-size: 1.8em;
+            }
+            
+            h3 {
+                font-size: 1.5em;
+            }
+            
+            h4 {
+                font-size: 1.3em;
+            }
+            
+            ul, ol {
+                margin-left: 20px;
+            }
+            
+            table {
+                font-size: 0.8em;
+            }
+            
+            table th, table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="rules-container">
+        <h1>战略围棋与战术象棋融合游戏规则</h1>
+        
+        <div class="highlight">
+            <p>本游戏创新性地融合了围棋的战略布局和象棋的战术对决，创造了一种双层棋盘的全新玩法。通过在战略层围空获取资源，在战术层召唤棋子战斗，玩家需要同时运用宏观战略和微观战术才能取得胜利。</p>
+        </div>
+        
+        <h2>游戏概述</h2>
+        <p>本游戏由黑白两方玩家轮流进行，游戏分为<strong>战略层</strong>和<strong>战术层</strong>两个棋盘，两层之间通过"战术令牌"和"堡垒"棋子相互影响。玩家通过在战略层围空获取战术令牌，使用令牌在战术层召唤棋子进行战斗，胜利后可以在战略层放置堡垒棋子来加强自己的战略优势。游戏的最终目标是通过战略和战术的结合，击败对手，获得最终胜利。</p>
+        
+        <h2>战略层规则（围棋棋盘）</h2>
+        
+        <h3>基本规则</h3>
+        <ul>
+            <li>战略层使用标准围棋十九路棋盘（19×19交叉点）</li>
+            <li>玩家使用黑白两色棋子进行落子</li>
+            <li>黑白双方轮流在交叉点上放置棋子，禁止在已有棋子的位置落子</li>
+            <li>遵循围棋的基本规则：落子后不能形成"自杀"，且不能下成重复的棋局（打劫规则）</li>
+        </ul>
+        
+        <h3>提子规则</h3>
+        <ul>
+            <li>当一方的棋子周围的气（上下左右相邻的空交叉点）被对方棋子全部占据时，这些棋子被提走</li>
+            <li>提子后，相应的交叉点变为空点，可重新落子</li>
+        </ul>
+        
+        <h3>资源获取</h3>
+        <ul>
+            <li>每围出3×3大小的空地（完全被一方棋子包围的区域），获得1个战术令牌</li>
+            <li>每围出5×5大小的空地，获得2个战术令牌</li>
+            <li>战略层有特定的资源点（棋盘上的9个星位），占领这些点可以获得额外奖励</li>
+        </ul>
+        
+        <div class="note">
+            <strong>注意：</strong>令牌数量会显示在玩家信息区域，玩家可以随时查看自己拥有的令牌数量。
+        </div>
+        
+        <h2>战术层规则（象棋棋盘）</h2>
+        
+        <h3>基本规则</h3>
+        <ul>
+            <li>战术层使用缩小版象棋棋盘（9×10交叉点）</li>
+            <li>玩家通过消耗战术令牌召唤象棋棋子进行战斗</li>
+            <li>战术层的战斗是临时性的，每次战斗结束后棋盘会重置</li>
+        </ul>
+        
+        <h3>棋子召唤</h3>
+        <ul>
+            <li>玩家需要消耗一定数量的战术令牌来召唤不同类型的棋子</li>
+            <li>每次战斗开始时，双方可以召唤最多3个棋子</li>
+            <li>召唤的棋子将放置在各自一方的底线</li>
+        </ul>
+        
+        <h3>棋子类型与消耗</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>棋子类型</th>
+                    <th>令牌消耗</th>
+                    <th>移动规则</th>
+                    <th>特殊能力</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>车</td>
+                    <td>3</td>
+                    <td>横线或竖线任意格数移动</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>马</td>
+                    <td>2</td>
+                    <td>日字移动（先横或竖走一格，再斜走一格）</td>
+                    <td>无蹩马腿规则</td>
+                </tr>
+                <tr>
+                    <td>炮</td>
+                    <td>3</td>
+                    <td>横线或竖线任意格数移动，吃子需要一个炮架</td>
+                    <td>远程攻击</td>
+                </tr>
+                <tr>
+                    <td>象</td>
+                    <td>2</td>
+                    <td>田字移动</td>
+                    <td>防守型棋子</td>
+                </tr>
+                <tr>
+                    <td>士</td>
+                    <td>1</td>
+                    <td>九宫格内斜线移动一格</td>
+                    <td>保护将/帅</td>
+                </tr>
+                <tr>
+                    <td>将/帅</td>
+                    <td>4</td>
+                    <td>九宫格内上下左右移动一格</td>
+                    <td>被吃掉则战术战斗失败</td>
+                </tr>
+                <tr>
+                    <td>卒/兵</td>
+                    <td>1</td>
+                    <td>前进一格，过河后可左右移动</td>
+                    <td>数量优势</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>战术战斗胜利条件</h3>
+        <p>满足以下任一条件即可获得战术战斗胜利：</p>
+        <ul>
+            <li>吃掉对方的将/帅</li>
+            <li>将对方所有棋子消灭</li>
+            <li>将对方棋子全部赶到棋盘边缘</li>
+        </ul>
+        
+        <h2>两层交互机制</h2>
+        
+        <h3>战术令牌</h3>
+        <ul>
+            <li>战术令牌是连接两层的关键资源</li>
+            <li>玩家在战略层围空获得战术令牌</li>
+            <li>令牌可以在战术层用来召唤棋子</li>
+            <li>令牌数量有限，合理分配是游戏胜利的关键</li>
+        </ul>
+        
+        <h3>堡垒放置</h3>
+        <ul>
+            <li>在战术层战斗胜利后，玩家获得在战略层放置一个堡垒棋子的机会</li>
+            <li>堡垒棋子具有以下特性：</li>
+            <ul>
+                <li>同时具有黑白棋子的属性，既能围空又能阻挡对方</li>
+                <li>堡垒不能被提走，除非被对方的堡垒包围</li>
+                <li>堡垒占据的交叉点，双方都不能再放置普通棋子</li>
+                <li>堡垒可以连接己方棋子，形成更长的气</li>
+            </ul>
+        </ul>
+        
+        <div class="warning">
+            <strong>重要提示：</strong>堡垒棋子是战略性武器，放置位置需要谨慎考虑，它可以快速改变战略层的格局。
+        </div>
+        
+        <h3>层间切换机制</h3>
+        <ul>
+            <li>游戏默认在战略层进行</li>
+            <li>当玩家想要进入战术层战斗时，需要点击"进入战术层"按钮</li>
+            <li>战术层战斗结束后，自动返回战略层</li>
+            <li>每次战术战斗后，有3回合的冷却期，期间不能再次进入战术层</li>
+        </ul>
+        
+        <h2>游戏胜利条件</h2>
+        <p>满足以下任一条件即可获得游戏胜利：</p>
+        <ul>
+            <li>在战略层，将对方的领地压缩到无法有效围空的程度</li>
+            <li>放置3个以上的堡垒，形成对对方的战略包围</li>
+            <li>通过战术层战斗，持续消耗对方资源，使其无法继续游戏</li>
+        </ul>
+        
+        <h2>游戏控制</h2>
+        
+        <h3>操作按钮</h3>
+        <ul>
+            <li><strong>开始游戏：</strong>初始化游戏，开始新的一局</li>
+            <li><strong>进入战术层：</strong>切换到战术层进行战斗</li>
+            <li><strong>放置堡垒：</strong>在战术战斗胜利后，用于在战略层放置堡垒</li>
+            <li><strong>查看规则：</strong>打开游戏规则说明</li>
+            <li><strong>重新开始：</strong>重置当前游戏，重新开始</li>
+            <li><strong>悔棋：</strong>撤销上一步操作（限战略层使用）</li>
+        </ul>
+        
+        <h3>快捷键</h3>
+        <ul>
+            <li><strong>空格键：</strong>切换玩家回合</li>
+            <li><strong>R键：</strong>重新开始游戏</li>
+            <li><strong>H键：</strong>悔棋</li>
+            <li><strong>Q键：</strong>退出游戏</li>
+        </ul>
+        
+        <h2>游戏技巧</h2>
+        
+        <h3>战略层技巧</h3>
+        <ul>
+            <li>优先占领棋盘上的资源点（星位）</li>
+            <li>形成高效的围空结构，快速积累战术令牌</li>
+            <li>注意防守关键区域，防止被对方分割</li>
+            <li>堡垒放置在战略要地，可以事半功倍</li>
+        </ul>
+        
+        <h3>战术层技巧</h3>
+        <ul>
+            <li>根据当前战略需要选择合适的棋子组合</li>
+            <li>优先召唤性价比高的棋子（如马、卒）形成数量优势</li>
+            <li>在关键时刻召唤将/帅可以扭转战局</li>
+            <li>注意棋子的移动范围和攻击方式，形成有效的战斗阵型</li>
+        </ul>
+        
+        <div class="example">
+            <h4>战术组合推荐</h4>
+            <p><strong>快速攻击组合：</strong>车 + 马 + 炮（消耗8个令牌）</p>
+            <p><strong>平衡发展组合：</strong>马 + 马 + 卒（消耗5个令牌）</p>
+            <p><strong>防守反击组合：</strong>象 + 士 + 将（消耗7个令牌）</p>
+        </div>
+        
+        <h3>整体策略</h3>
+        <ul>
+            <li>保持战略层和战术层的平衡发展</li>
+            <li>不要过度消耗令牌，保持一定的战略储备</li>
+            <li>观察对手的策略，灵活调整自己的布局</li>
+            <li>在适当时机发动战术层战斗，改变战略层的态势</li>
+        </ul>
+        
+        <div class="note">
+            <strong>提示：</strong>游戏的魅力在于战略和战术的结合，尝试不同的策略组合，找到最适合自己的游戏方式！
+        </div>
+        
+        <a href="index.html" class="back-button">返回游戏</a>
+    </div>
+</body>
+</html>

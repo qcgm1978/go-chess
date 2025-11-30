@@ -1,0 +1,17 @@
+{
+  "name": "go-chess-hybrid",
+  "version": "1.0.0",
+  "description": "混合围棋和象棋元素的创新棋类游戏",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server . -p 8080",
+    "server": "node katago-server.js",
+    "build": "echo '构建完成'"
+  },
+  "dependencies": {
+    "capacitor": "^4.7.3"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

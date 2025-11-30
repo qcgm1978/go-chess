@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Game.js Load</title>
+</head>
+<body>
+    <h1>Testing Game.js Loading</h1>
+    <script>
+        console.log('Starting to load scripts...');
+    </script>
+    <!-- 加载必要的依赖文件 -->
+    <script src="src/js/board.js"></script>
+    <script src="src/js/strategicLayer.js"></script>
+    <script src="src/js/game.js"></script>
+    <script>
+        console.log('Game.js loaded successfully if you see the alert');
+        console.log('Game class exists:', typeof Game !== 'undefined');
+        if (typeof Game !== 'undefined') {
+            try {
+                console.log('Creating Game instance...');
+                const game = new Game();
+                console.log('Game instance created successfully:', game);
+                document.write('<p style="color: green;">Success: Game.js loaded and Game instance created!</p>');
+            } catch (e) {
+                console.error('Error creating Game instance:', e);
+                document.write('<p style="color: red;">Error creating Game instance: ' + e.message + '</p>');
+            }
+        } else {
+            console.error('Game class not found');
+            document.write('<p style="color: red;">Error: Game class not found!</p>');
+        }
+    </script>
+</body>
+</html>
