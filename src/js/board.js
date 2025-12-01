@@ -172,6 +172,16 @@ class StrategicBoard extends Board {
         }
         return null;
     }
+    
+    // 获取所有棋子信息
+    getAllStones() {
+        // 返回格式化的棋子信息数组
+        return this.stones.map(stone => ({
+            row: parseInt(stone.dataset.row),
+            col: parseInt(stone.dataset.col),
+            color: stone.classList.contains('black') ? 'black' : 'white'
+        }));
+    }
 }
 
 // 战术层棋盘（象棋棋盘）

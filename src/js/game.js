@@ -33,6 +33,10 @@ class Game {
     // 设置Katago接口
     setKatagoInterface(katagoInterface) {
         this.katagoInterface = katagoInterface;
+        // 将Katago接口传递给strategicLayer
+        if (this.strategicLayer && typeof this.strategicLayer.setKatagoInterface === 'function') {
+            this.strategicLayer.setKatagoInterface(katagoInterface);
+        }
     }
     
     // 使用Katago获取当前棋盘的领土估计
@@ -93,18 +97,21 @@ class Game {
     
     // 更新领土显示
     updateTerritoryDisplay(estimate) {
-        // 这里可以实现更新UI显示领土估计的逻辑
-        // 例如更新游戏信息面板
+        // 更新UI显示领土估计
         const gameStats = document.querySelector('.game-stats');
         if (gameStats) {
-            let territoryInfo = gameStats.querySelector('.territory-info');
-            if (!territoryInfo) {
-                territoryInfo = document.createElement('p');
-                territoryInfo.className = 'territory-info';
-                gameStats.appendChild(territoryInfo);
-            }
+            document.getElementById('black-territory').textContent = estimate.black || 0;
+            document.getElementById('white-territory').textContent = estimate.white || 0;
+        }
+        
+        // 同时更新strategicLayer中的领土状态并触发令牌计算
+        if (this.strategicLayer && this.strategicLayer.gameState) {
+            this.strategicLayer.gameState.territory.black = estimate.black || 0;
+            this.strategicLayer.gameState.territory.white = estimate.white || 0;
             
-            territoryInfo.textContent = `黑方领土: ${estimate.blackTerritory || 0}  白方领土: ${estimate.whiteTerritory || 0}`;
+            // 触发令牌计算和显示更新
+            this.strategicLayer.checkTokenEarn();
+            this.strategicLayer.updateTokenDisplay();
         }
     }
     
@@ -224,6 +231,16 @@ class Game {
     }
     
     startNewGame() {
+        console.log('游戏开始，初始化KataGo连接...');
+        // 清除之前可能存在的定时器
+        if (this.testInterval) {
+            clearInterval(this.testInterval);
+        }
+        // 游戏开始时定期调用领土估计，每2秒调用一次
+        this.testInterval = setInterval(() => {
+            console.log('主动测试KataGo连接，获取领土估计');
+            this.getTerritoryEstimateFromKatago();
+        }, 2000);
         // 安全检查
         if (!this.strategicLayer || !this.tacticalLayer) {
             return;
@@ -453,6 +470,11 @@ class Game {
     
     endGame(winner) {
         try {
+            // 清除测试定时器
+            if (this.testInterval) {
+                clearInterval(this.testInterval);
+                console.log('游戏结束，停止KataGo测试连接');
+            }
             // 禁用游戏交互
             this.isGameOver = true;
             

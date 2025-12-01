@@ -58,6 +58,11 @@ class StrategicLayer {
         // 检查并提走没有气的对方棋子
         const capturedStones = this.captureStones(row, col);
         
+        // 更新提子数量统计
+        if (capturedStones > 0) {
+            this.updateCapturedStones(capturedStones, this.gameState.currentPlayer);
+        }
+        
         // 检查是否自杀（如果新落的棋子没有气，且没有提走对方棋子，则不允许）
         if (capturedStones === 0 && !this.hasLiberty(row, col)) {
             // 撤销落子
@@ -191,8 +196,70 @@ class StrategicLayer {
         return false;
     }
     
-    updateTerritory() {
-        // 简化的领土计算，实际围棋规则更复杂
+    // 设置Katago接口引用
+    setKatagoInterface(katagoInterface) {
+        this.katagoInterface = katagoInterface;
+    }
+    
+    // 准备发送给Katago的棋盘状态
+    prepareBoardStateForKatago() {
+        const stones = this.board.getAllStones();
+        const moves = [];
+        
+        stones.forEach(stone => {
+            if (stone) {
+                // 转换坐标为围棋坐标格式（如Q16）
+                const letter = String.fromCharCode(65 + stone.col);
+                const number = 19 - stone.row;
+                
+                moves.push({
+                    player: stone.color,
+                    coord: letter + number
+                });
+            }
+        });
+        
+        return {
+            currentPlayer: this.gameState.currentPlayer,
+            moves: moves,
+            boardSize: 19
+        };
+    }
+    
+    // 使用Katago接口更新领地数据
+    async updateTerritoryWithKatago() {
+        if (this.katagoInterface) {
+            try {
+                const boardState = this.prepareBoardStateForKatago();
+                const estimate = await this.katagoInterface.getTerritoryEstimate(boardState);
+                
+                if (estimate) {
+                    console.log('使用Katago更新领地数据:', estimate);
+                    this.gameState.territory.black = estimate.black || 0;
+                    this.gameState.territory.white = estimate.white || 0;
+                    
+                    // 调用令牌计算逻辑
+                    this.checkTokenEarn();
+                    // 更新UI显示令牌数量
+                    this.updateTokenDisplay();
+                    
+                    return true;
+                }
+            } catch (error) {
+                console.error('使用Katago更新领地失败:', error);
+            }
+        }
+        
+        // 如果Katago更新失败，回退到本地计算
+        this.updateTerritoryLocal();
+        // 本地计算后也更新令牌显示
+        this.checkTokenEarn();
+        this.updateTokenDisplay();
+        return false;
+    }
+    
+    // 本地简化的领土计算（作为回退方案）
+    updateTerritoryLocal() {
         const visited = new Set();
         let blackTerritory = 0;
         let whiteTerritory = 0;
@@ -213,6 +280,12 @@ class StrategicLayer {
         
         this.gameState.territory.black = blackTerritory;
         this.gameState.territory.white = whiteTerritory;
+    }
+    
+    // 公共接口方法，优先使用Katago
+    updateTerritory() {
+        // 异步调用Katago更新领地
+        this.updateTerritoryWithKatago();
     }
     
     analyzeTerritory(row, col, visited) {
@@ -259,19 +332,62 @@ class StrategicLayer {
     }
     
     checkTokenEarn() {
-        // 每获得10个领地，获得一个战术令牌
-        const blackTokensEarned = Math.floor(this.gameState.territory.black / 10);
-        const whiteTokensEarned = Math.floor(this.gameState.territory.white / 10);
+        // 初始化提子数量统计
+        if (!this.gameState.capturedStones) {
+            this.gameState.capturedStones = {
+                black: 0,
+                white: 0
+            };
+        }
         
-        if (blackTokensEarned > this.gameState.tokens.black) {
-            this.gameState.tokens.black = blackTokensEarned;
+        // 计算领地奖励的令牌数（每8个领地获得一个令牌，提高获取频率）
+        const territoryTokensBlack = Math.floor(this.gameState.territory.black / 8);
+        const territoryTokensWhite = Math.floor(this.gameState.territory.white / 8);
+        
+        // 计算提子奖励的令牌数（每提走5个对方棋子获得一个令牌）
+        const captureTokensBlack = Math.floor(this.gameState.capturedStones.black / 5);
+        const captureTokensWhite = Math.floor(this.gameState.capturedStones.white / 5);
+        
+        // 检查棋盘中心位置的特殊奖励（如果有棋子在中心位置，额外获得1个令牌）
+        const centerBonusBlack = this.hasStoneAtCenter('black') ? 1 : 0;
+        const centerBonusWhite = this.hasStoneAtCenter('white') ? 1 : 0;
+        
+        // 计算总令牌数
+        const totalTokensBlack = territoryTokensBlack + captureTokensBlack + centerBonusBlack;
+        const totalTokensWhite = territoryTokensWhite + captureTokensWhite + centerBonusWhite;
+        
+        // 更新令牌并显示消息
+        if (totalTokensBlack > this.gameState.tokens.black) {
+            this.gameState.tokens.black = totalTokensBlack;
             this.updateGameMessage('黑方获得战术令牌！');
         }
         
-        if (whiteTokensEarned > this.gameState.tokens.white) {
-            this.gameState.tokens.white = whiteTokensEarned;
+        if (totalTokensWhite > this.gameState.tokens.white) {
+            this.gameState.tokens.white = totalTokensWhite;
             this.updateGameMessage('白方获得战术令牌！');
         }
+    }
+    
+    // 检查是否有棋子在中心位置
+    hasStoneAtCenter(playerColor) {
+        const centerRow = Math.floor(this.board.rows / 2);
+        const centerCol = Math.floor(this.board.cols / 2);
+        const centerStone = this.board.getStoneAt(centerRow, centerCol);
+        return centerStone && centerStone.classList.contains(playerColor);
+    }
+    
+    // 更新提子数量统计
+    updateCapturedStones(count, playerColor) {
+        if (!this.gameState.capturedStones) {
+            this.gameState.capturedStones = {
+                black: 0,
+                white: 0
+            };
+        }
+        
+        // 记录提走的对方棋子数量
+        const oppositeColor = playerColor === 'black' ? 'white' : 'black';
+        this.gameState.capturedStones[oppositeColor] += count;
     }
     
     placeFortress(row, col, player) {
@@ -326,6 +442,13 @@ class StrategicLayer {
             this.gameState.lastMove = this.gameState.moveHistory[this.gameState.moveHistory.length - 1] || null;
             this.gameState.currentPlayer = lastMove.player; // 撤销后还是原玩家回合
             this.updateTerritory();
+            
+            // 重置提子统计（简化处理，实际应该记录每次提子的历史）
+            if (this.gameState.capturedStones) {
+                this.gameState.capturedStones = { black: 0, white: 0 };
+            }
+            
+            // 重新计算令牌
             this.checkTokenEarn();
             this.updateTokenDisplay();
             this.updatePlayerDisplay();
@@ -346,6 +469,7 @@ class StrategicLayer {
         this.gameState.currentPlayer = 'black';
         this.gameState.territory = { black: 0, white: 0 };
         this.gameState.tokens = { black: 0, white: 0 };
+        this.gameState.capturedStones = { black: 0, white: 0 };
         this.gameState.lastMove = null;
         this.gameState.moveHistory = [];
         
